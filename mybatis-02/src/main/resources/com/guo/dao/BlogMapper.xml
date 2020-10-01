@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guo.dao.BlogMapper">
+    <resultMap id="blogMap" type="Blog">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="author" column="author"/>
+        <!-- 开启自动驼峰映命名映射后不用再写映射 -->
+        <result property="createTime" column="create_time"/>
+        <result property="views" column="views"/>
+    </resultMap>
+    <select id="listBlog" resultMap="blogMap">
+        select * from blog;
+    </select>
+
+    <insert id="addBlog" parameterType="Blog">
+        insert into blog(id, title, author, create_time, views)
+        values(#{id}, #{title}, #{author}, #{createTime}, #{views})
+    </insert>
+
+    <!-- ************************************************************* -->
+
+    <!-- 动态 SQL if -->
+    <select id="queryBlogIf" parameterType="map" resultType="blog">
+        select * from blog where 1=1
+        <if test="title != null">
+            and title = #{title}
+        </if>
+        <if test="author != null">
+            and author = #{author}
+        </if>
+    </select>
+
+    <!-- 动态 SQL where -->
+    <select id="queryBlogWhere" parameterType="map" resultType="blog">
+        select * from blog
+        <where>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="author != null">
+                and author = #{author}
+            </if>
+        </where>
+    </select>
+
+    <!-- SQL 片段 -->
+    <sql id="blog-field">id,title,author,create_time,views</sql>
+    <sql id="if-blog">
+        <if test="title != null">
+            and title = #{title}
+        </if>
+        <if test="author != null">
+            and author = #{author}
+        </if>
+    </sql>
+    <select id="queryBlogSQL" parameterType="map" resultType="blog">
+        select
+        <include refid="blog-field"></include>
+        from blog
+        <where>
+            <include refid="if-blog"></include>
+        </where>
+    </select>
+
+    <!-- 动态 SQL choose（类型 Java 中的 switch，when 满足条件时只会走一个） -->
+    <select id="queryBlogChoose" parameterType="map" resultType="blog">
+        select * from blog
+        <where>
+            <choose>
+                <when test="title != null">
+                    and title = #{title}
+                </when>
+                <when test="author != null">
+                    and author = #{author}
+                </when>
+                <otherwise>
+                    author='张三'
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!-- 动态 SQL set -->
+    <update id="updateBlogSet" parameterType="map">
+        update blog
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="author != null">
+                author = #{author}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- 动态 SQL foreach，使用 list 做参数 -->
+    <select id="queryBlogForeachByList" resultType="blog" parameterType="list">
+        select * from blog
+        <where>
+            <foreach collection="ids" item="id" open="and (" close=")" separator="or">
+                id = #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <!-- 动态 SQL foreach 使用 map 做参数 -->
+    <select id="queryBlogForeachByMap" resultType="blog" parameterType="map">
+        select * from blog
+        <where>
+            <foreach collection="ids" item="id" open="and (" close=")" separator="or">
+                id = #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <!-- 动态 SQL foreach in 查询 -->
+    <select id="queryBlogForeach" resultType="blog" parameterType="map">
+        select * from blog
+        <where>
+            <foreach collection="ids" item="item" open="id in(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

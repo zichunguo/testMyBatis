@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guo.dao.WeekMapper">
+    <!-- 测试枚举类型的映射器 - 使用整形值存储，在 mybatis-config.xml 配置 typeHandler。enum 默认的映射器为 EnumTypeHandler-->
+    <select id="listWeek" resultType="Week">
+        select id,weekday from week;
+    </select>
+
+    <resultMap id="weekMap" type="Week">
+        <result property="id" column="id"/>
+        <result property="weekDay" column="weekdayval" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+    </resultMap>
+    <!-- 测试枚举类型的映射器 - 某些情况下使用枚举名字（String）存储 -->
+    <!-- 在 ResultMap 中的 Result 标签上配置：typeHandler="org.apache.ibatis.type.EnumTypeHandler" -->
+    <select id="listWeek2" resultMap="weekMap">
+        select id,weekdayval from week;
+    </select>
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- configuration 核心配置文件 -->
+<configuration>
+    <!-- 使用外部配置文件 -->
+    <!--<properties resource="db.properties"/>-->
+    <!-- 使用配置属性 -->
+    <!--
+    <properties>
+        <property name="driver" value="org.gjt.mm.mysql.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </properties>
+    -->
+    <!-- 当同时配置了外部配置文件和属性时，优先选择外部配置文件中的值 -->
+    <properties resource="db.properties">
+        <property name="driver" value="org.gjt.mm.mysql.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </properties>
+
+    <!-- 设置 -->
+    <settings>
+        <!-- 标准的日志工厂实现 -->
+        <!--<setting name="logImpl" value="STDOUT_LOGGING"/>-->
+        <!-- log4g -->
+        <setting name="logImpl" value="LOG4J"/>
+        <!-- 开启驼峰命名自动映射 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!-- 核心配置文件中，开启二级缓存全局配置 -->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+    <!-- 设置别名 -->
+    <typeAliases>
+        <!-- 指定某一个类 -->
+        <!--<typeAlias alias="User" type="com.guo.pojo.User"/>-->
+        <!-- 扫描整个包 -->
+        <package name="com.guo"/>
+    </typeAliases>
+
+    <!-- 配置映射器 -->
+    <typeHandlers>
+        <!-- 配置 enum 类型的 WeekDay 在映射时使用 EnumOrdinalTypeHandler 映射器，enum 默认的映射器为 EnumTypeHandler -->
+        <typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler" javaType="com.guo.pojo.WeekDay"/>
+    </typeHandlers>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!-- 注册 Mapper.xml 到核心配置文件中 -->
+    <mappers>
+        <!-- 使用相对于类路径的资源引用 -->
+        <!--<mapper resource="com/guo/dao/UserMapper.xml"/>-->
+        <!-- 使用映射器接口实现类的完全限定类名 -->
+        <!--<mapper class="com.guo.dao.UserMapper"/>-->
+        <!-- 将包内的映射器接口实现全部注册为映射器 -->
+        <package name="com.guo.dao"/>
+    </mappers>
+
+</configuration>
